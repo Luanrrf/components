@@ -1,17 +1,17 @@
 "use client"; // Caso o projeto seja só em react não é necessário essa linha
 import React, { useState } from "react";
-import ActiveDot from "./assets/ActiveDot";
-import Dot from "./assets/Dot";
 import { getSlideValue } from "./utils/getSlideValue";
+import ArrowGroup from "./ArrowGroup";
+import DotGroup from "./DotGroup";
 
 interface ISlide {
-  SlideItems: React.JSX.Element[];
+  children: React.ReactNode[];
   autoplay?: number;
   arrows?: boolean;
   dots?: boolean;
 }
 
-const Slide = ({ SlideItems, autoplay, arrows, dots }: ISlide) => {
+const Slide = ({ children, autoplay, arrows, dots }: ISlide) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
 
   if (autoplay) {
@@ -21,44 +21,27 @@ const Slide = ({ SlideItems, autoplay, arrows, dots }: ISlide) => {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col relative w-full items-center justify-center">
+
       <div className="flex justify-between w-full">
-        {arrows && (
-          <p
-            onClick={() => {
-              setCurrentSlide((currentSlide) => currentSlide - 1);
-            }}
-          >
-            ArrowLeft
-          </p>
-        )}
-        {SlideItems[getSlideValue(currentSlide, SlideItems.length)]}
-        {arrows && (
-          <p
-            onClick={() => {
-              setCurrentSlide((currentSlide) => currentSlide + 1);
-            }}
-          >
-            ArrowRight
-          </p>
-        )}
+        {children[getSlideValue(currentSlide, children.length)]}
       </div>
+      
+      {arrows && (
+        <ArrowGroup
+          currentSlide={currentSlide}
+          setCurrentSlide={setCurrentSlide}
+        />
+      )}
+
       {dots && (
-        <div className="flex flex-row items-center justify-center">
-          {SlideItems.map((_, index) => (
-            <span
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className="m-1"
-            >
-              {index === getSlideValue(currentSlide, SlideItems.length) ? (
-                <ActiveDot />
-              ) : (
-                <Dot />
-              )}
-            </span>
-          ))}
-        </div>
+        <DotGroup
+          getSlideValue={getSlideValue}
+          currentSlide={currentSlide}
+          setCurrentSlide={setCurrentSlide}
+        >
+          {children}
+        </DotGroup>
       )}
     </div>
   );
